@@ -15,16 +15,16 @@ class ApiSingleCatalogItem extends ApiCatalogItem {
         $item = $controller->getSingleItem($id);
 
         /** FROM SUPER */
-        $obj_arr = $this->putDataToArray($item);
+        $obj_arr = parent::putDataToArray($item);
 
         /** FROM SUPER */
-        return $this->prepareDataToSendClient($obj_arr);
+        return parent::prepareDataToSendClient($obj_arr);
 
     }
 
     /** Вызывается при создании клиентом нового CatalogItem */
     public function setJsonSingleItem($jsonString) {
-        $dataArr = json_decode($jsonString, true);
+        $dataArr = parent::jsonToAssocArray($jsonString);
 
         $controller = new SingleCatalogItemController();
 
@@ -32,7 +32,32 @@ class ApiSingleCatalogItem extends ApiCatalogItem {
             return json_encode(Array('message' => 'New Catalog Item was created.'));
         }
 
-        return json_encode(Array('message' => 'Catalog Item not created.'));
+        return json_encode(Array('message' => 'Catalog Item was not created.'));
+    }
+
+    public function updateJsonSingleItem($jsonString) {
+        $dataArr = parent::jsonToAssocArray($jsonString);
+
+        $controller = new SingleCatalogItemController();
+
+        if ($controller->updateSingleItem($dataArr)) {
+            return json_encode(Array('message' => 'Catalog Item was updated.'));
+        }
+
+        return json_encode(Array('message' => 'Catalog Item was not updated.'));
+
+    }
+
+    public function deleteJsonSingleItem($jsonString) {
+        $dataArr = parent::jsonToAssocArray($jsonString);
+
+        $controller = new SingleCatalogItemController();
+
+        if ($controller->deleteSingleItem($dataArr)) {
+            return json_encode(Array('message' => 'Catalog Item was deleted.'));
+        }
+
+        return json_encode(Array('message' => 'CatalogItem was not deleted.'));
     }
 
 }

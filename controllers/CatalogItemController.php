@@ -5,7 +5,8 @@ include_once '../config/Database.php';
 class CatalogItemController {
 
     protected $conn;
-    protected $table = 'items';
+
+    const TABLE = 'items';
 
     protected function __construct() {
         $db = new Database();
@@ -20,6 +21,18 @@ class CatalogItemController {
             'category_id' => $category_id,
             'category_name' => $category_name
         );
+    }
+
+    protected function cleanData($dataArr) {
+        $cleanedDataArr = Array();
+
+        foreach ($dataArr as $data) {
+            $clean_data = htmlspecialchars(strip_tags($data));
+            $key = array_search($data, $dataArr);
+            $cleanedDataArr[$key] = $clean_data;
+        }
+
+        return $cleanedDataArr;
     }
 
 }

@@ -16,7 +16,7 @@ class CatalogItemListController extends CatalogItemController {
                     i.title,
                     i.body
                 FROM 
-                    '.$this->table.' i 
+                    '.parent::TABLE.' i 
                 LEFT JOIN 
                     categories c ON i.category_id = c.id 
                 ORDER BY 

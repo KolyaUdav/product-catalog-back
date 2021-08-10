@@ -19,8 +19,12 @@ class ApiCatalogItem {
         );
     }
 
-    protected function prepareDataToSendClient($data_arr) {
-        return json_encode($data_arr);
+    protected function prepareDataToSendClient($dataArr) {
+        return json_encode($dataArr);
+    }
+
+    protected function jsonToAssocArray($jsonString) {
+        return json_decode($jsonString, true); // return assoc arr
     }
 
 }

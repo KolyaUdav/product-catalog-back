@@ -16,7 +16,7 @@ class SingleCatalogItemController extends CatalogItemController {
                     i.title, 
                     i.body 
                 FROM 
-                    '.$this->table.' i 
+                    '.parent::TABLE.' i 
                 LEFT JOIN 
                     categories c ON i.category_id = c.id 
                 WHERE i.id = :id LIMIT 0,1';
@@ -41,11 +41,14 @@ class SingleCatalogItemController extends CatalogItemController {
      * возвращает False, если есть ошибка
      */
     public function createSingleItem($dataArr) {
-        $cleanedDataArr = $this->cleanData($dataArr);
+        $cleanedDataArr = parent::cleanData($dataArr);
 
-        $newCatalogItem = $this->createSingleCatalogItemObj($cleanedDataArr);
+        $newCatalogItem = new CatalogItem();
+        $newCatalogItem->title = $cleanedDataArr['title'];
+        $newCatalogItem->body = $cleanedDataArr['body'];
+        $newCatalogItem->category_id = $cleanedDataArr['category_id'];
 
-        $query = 'INSERT INTO '.$this->table.' SET title = :title, body = :body, category_id = :category_id';
+        $query = 'INSERT INTO '.parent::TABLE.' SET title = :title, body = :body, category_id = :category_id';
 
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':title', $newCatalogItem->title);
@@ -61,23 +64,48 @@ class SingleCatalogItemController extends CatalogItemController {
         return false;
     }
 
-    private function cleanData($dataArr) {
-        $cleanedDataArr = Array(
-            'title' => htmlspecialchars(strip_tags($dataArr['title'])),
-            'body' => htmlspecialchars(strip_tags($dataArr['body'])),
-            'category_id' => htmlspecialchars(strip_tags($dataArr['category_id']))
-        );
+    public function updateSingleItem($dataArr) {
+        $cleanedDataArr = parent::cleanData($dataArr);
 
-        return $cleanedDataArr;
+        $updCatalogItem = new CatalogItem();
+        $updCatalogItem->id = $cleanedDataArr['id'];
+        $updCatalogItem->title = $cleanedDataArr['title'];
+        $updCatalogItem->body = $cleanedDataArr['body'];
+        $updCatalogItem->category_id = $cleanedDataArr['category_id'];
+
+        $query = 'UPDATE '.parent::TABLE.' SET title = :title, body = :body, category_id = :category_id WHERE id = :id';
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':id', $updCatalogItem->id);
+        $stmt->bindParam(':title', $updCatalogItem->title);
+        $stmt->bindParam(':body', $updCatalogItem->body);
+        $stmt->bindParam(':category_id', $updCatalogItem->category_id);
+
+        if ($stmt->execute()) {
+            return true;
+        }
+
+        printf('Error: %s.\n', $stmt->error);
+
+        return false;
     }
 
-    private function createSingleCatalogItemObj($cleanedDataArr) {
-        $newCatalogItem = new CatalogItem();
-        $newCatalogItem->title = $cleanedDataArr['title'];
-        $newCatalogItem->body = $cleanedDataArr['body'];
-        $newCatalogItem->category_id = $cleanedDataArr['category_id'];
+    public function deleteSingleItem($dataArr) {
+        $cleanedDataArr = parent::cleanData($dataArr); // clean ID
 
-        return $newCatalogItem;
+        $deleteCatalogItem = new CatalogItem();
+        $deleteCatalogItem->id = $cleanedDataArr['id'];
+
+        $query = 'DELETE FROM '.parent::TABLE.' WHERE id = :id';
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':id', $deleteCatalogItem->id);
+        
+        if ($stmt->execute()) {
+            return true;
+        }
+
+        printf('Error: %s.\n', $stmt->error);
+
+        return false;
     }
 
 }

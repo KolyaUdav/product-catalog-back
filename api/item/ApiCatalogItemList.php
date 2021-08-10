@@ -16,11 +16,10 @@ class ApiCatalogItemList extends ApiCatalogItem {
         if ($list !== null) {
             $wrapped_arr = $this->toWrapCatalogItemList($list);
         
-            /** FROM SUPER */
-            return $this->prepareDataToSendClient($wrapped_arr);
+            return parent::prepareDataToSendClient($wrapped_arr);
         }
 
-        return $this->prepareDataToSendClient(Array('message' => 'No objects found.'));
+        return parent::prepareDataToSendClient(Array('message' => 'No objects found.'));
     }
 
     private function toWrapCatalogItemList($list) {
@@ -31,7 +30,7 @@ class ApiCatalogItemList extends ApiCatalogItem {
             /** Данные объекта пакуем в ассоц. массив, затем добавляем его в массив obj_arr[data] */
 
             /** FROM SUPER */
-            array_push($obj_arr['data'], $this->putDataToArray($obj));
+            array_push($obj_arr['data'], parent::putDataToArray($obj));
         }
 
         return $obj_arr;
