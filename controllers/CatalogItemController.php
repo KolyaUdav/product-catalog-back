@@ -35,4 +35,23 @@ class CatalogItemController {
         return $cleanedDataArr;
     }
 
+    protected function createCatalogItemObject($dataArr) {
+        $catalogItem = new CatalogItem();
+
+        $properties = array_keys($this->getPublicProperties($catalogItem)); // Получаем все public properties
+        
+        foreach ($properties as $prop) {
+            if (array_key_exists($prop, $dataArr)) {
+                /** Используем метод для автоматического присваивания value необходимым свойствам */
+                $catalogItem->addValueToProperty($prop, $dataArr[$prop]);
+            }
+        }
+
+        return $catalogItem;
+    }
+
+    private function getPublicProperties($catalogItem) {
+        return get_object_vars($catalogItem);
+    }
+
 }

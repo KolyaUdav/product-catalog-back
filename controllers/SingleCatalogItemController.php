@@ -23,16 +23,12 @@ class SingleCatalogItemController extends CatalogItemController {
 
         $stmt = $this->conn->prepare($query);
         $stmt->bindValue(':id', $id);
-        $row = $stmt->execute();
+        $stmt->execute();
 
-        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        $dataArr = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        $catalogItem = new CatalogItem();
-        $catalogItem->id = $row['id'];
-        $catalogItem->category_id = $row['category_id'];
-        $catalogItem->category_name = $row['category_name'];
-        $catalogItem->title = $row['title'];
-        $catalogItem->body = $row['body'];
+        $catalogItem = parent::createCatalogItemObject($dataArr);
+        
         return $catalogItem;
     }
 
@@ -43,10 +39,7 @@ class SingleCatalogItemController extends CatalogItemController {
     public function createSingleItem($dataArr) {
         $cleanedDataArr = parent::cleanData($dataArr);
 
-        $newCatalogItem = new CatalogItem();
-        $newCatalogItem->title = $cleanedDataArr['title'];
-        $newCatalogItem->body = $cleanedDataArr['body'];
-        $newCatalogItem->category_id = $cleanedDataArr['category_id'];
+        $newCatalogItem = parent::createCatalogItemObject($dataArr);
 
         $query = 'INSERT INTO '.parent::TABLE.' SET title = :title, body = :body, category_id = :category_id';
 
@@ -67,11 +60,7 @@ class SingleCatalogItemController extends CatalogItemController {
     public function updateSingleItem($dataArr) {
         $cleanedDataArr = parent::cleanData($dataArr);
 
-        $updCatalogItem = new CatalogItem();
-        $updCatalogItem->id = $cleanedDataArr['id'];
-        $updCatalogItem->title = $cleanedDataArr['title'];
-        $updCatalogItem->body = $cleanedDataArr['body'];
-        $updCatalogItem->category_id = $cleanedDataArr['category_id'];
+        $updCatalogItem = parent::createCatalogItemObject($dataArr);
 
         $query = 'UPDATE '.parent::TABLE.' SET title = :title, body = :body, category_id = :category_id WHERE id = :id';
         $stmt = $this->conn->prepare($query);
@@ -92,8 +81,7 @@ class SingleCatalogItemController extends CatalogItemController {
     public function deleteSingleItem($dataArr) {
         $cleanedDataArr = parent::cleanData($dataArr); // clean ID
 
-        $deleteCatalogItem = new CatalogItem();
-        $deleteCatalogItem->id = $cleanedDataArr['id'];
+        $deleteCatalogItem = parent::createCatalogItemObject($dataArr);
 
         $query = 'DELETE FROM '.parent::TABLE.' WHERE id = :id';
         $stmt = $this->conn->prepare($query);
