@@ -1,7 +1,11 @@
 <?php
 
+namespace pcb\api\item;
+
 include_once 'ApiCatalogItem.php';
 include_once '../controllers/CatalogItemListController.php';
+
+use pcb\controllers\CatalogItemListController;
 
 class ApiCatalogItemList extends ApiCatalogItem {
 
@@ -9,7 +13,7 @@ class ApiCatalogItemList extends ApiCatalogItem {
         parent::__construct();
     }
 
-    public function getJsonCatalogItemList() {
+    public function getJsonCatalogItemList(): string {
         $controller = new CatalogItemListController();
         $list = $controller->getList();
 
@@ -22,7 +26,7 @@ class ApiCatalogItemList extends ApiCatalogItem {
         return parent::prepareDataToSendClient(Array('message' => 'No objects found.'));
     }
 
-    private function toWrapCatalogItemList($list) {
+    private function toWrapCatalogItemList($list): array {
         $obj_arr = Array();
         $obj_arr['data'] = Array();
 

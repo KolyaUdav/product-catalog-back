@@ -1,7 +1,11 @@
 <?php
 
+namespace pcb\api\item;
+
 include_once 'ApiCatalogItem.php';
 include_once '../controllers/SingleCatalogItemController.php';
+
+use pcb\controllers\SingleCatalogItemController;
 
 class ApiSingleCatalogItem extends ApiCatalogItem {
 
@@ -10,20 +14,18 @@ class ApiSingleCatalogItem extends ApiCatalogItem {
     }
 
     /** Вызывается при отправке данных отдельного CatalogItem */
-    public function getJsonSingleItem($id) {
+    public function getJsonSingleItem($id): string {
         $controller = new SingleCatalogItemController();
         $item = $controller->getSingleItem($id);
 
-        /** FROM SUPER */
         $obj_arr = parent::putDataToArray($item);
 
-        /** FROM SUPER */
         return parent::prepareDataToSendClient($obj_arr);
 
     }
 
     /** Вызывается при создании клиентом нового CatalogItem */
-    public function setJsonSingleItem($jsonString) {
+    public function setJsonSingleItem($jsonString): string {
         $dataArr = parent::jsonToAssocArray($jsonString);
 
         $controller = new SingleCatalogItemController();
@@ -35,7 +37,7 @@ class ApiSingleCatalogItem extends ApiCatalogItem {
         return json_encode(Array('message' => 'Catalog Item was not created.'));
     }
 
-    public function updateJsonSingleItem($jsonString) {
+    public function updateJsonSingleItem($jsonString): string {
         $dataArr = parent::jsonToAssocArray($jsonString);
 
         $controller = new SingleCatalogItemController();
@@ -48,7 +50,7 @@ class ApiSingleCatalogItem extends ApiCatalogItem {
 
     }
 
-    public function deleteJsonSingleItem($jsonString) {
+    public function deleteJsonSingleItem($jsonString): string {
         $dataArr = parent::jsonToAssocArray($jsonString);
 
         $controller = new SingleCatalogItemController();

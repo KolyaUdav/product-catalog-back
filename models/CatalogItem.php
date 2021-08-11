@@ -1,4 +1,7 @@
 <?php
+
+namespace pcb\models;
+
 class CatalogItem {
 
     /** ПРИ ОБЪЯВЛЕНИИ НОВОГО PUBLIC-СВОЙСТВА

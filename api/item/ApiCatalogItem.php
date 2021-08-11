@@ -1,5 +1,11 @@
 <?php
 
+namespace pcb\api\item;
+
+include_once('../config/Database.php');
+
+use pcb\config\Database as Database;
+
 class ApiCatalogItem {
 
     protected $db;
@@ -9,7 +15,8 @@ class ApiCatalogItem {
         $this->db = $database->connect();
     }
 
-    protected function putDataToArray($catalogItem) {
+    protected function putDataToArray($catalogItem): array
+    {
         return array(
             'id' => $catalogItem->id,
             'title' => $catalogItem->title,
@@ -19,11 +26,11 @@ class ApiCatalogItem {
         );
     }
 
-    protected function prepareDataToSendClient($dataArr) {
+    protected function prepareDataToSendClient($dataArr): string {
         return json_encode($dataArr);
     }
 
-    protected function jsonToAssocArray($jsonString) {
+    protected function jsonToAssocArray($jsonString): array {
         return json_decode($jsonString, true); // return assoc arr
     }
 

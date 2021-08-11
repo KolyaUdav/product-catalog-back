@@ -1,6 +1,12 @@
 <?php
 
-include_once '../config/Database.php';
+namespace pcb\controllers;
+
+include_once('../config/Database.php');
+include_once('../models/CatalogItem.php');
+
+use pcb\config\Database;
+use pcb\models\CatalogItem;
 
 class CatalogItemController {
 
@@ -13,17 +19,13 @@ class CatalogItemController {
         $this->conn = $db->connect();
     }
 
-    protected function putRowDataToArray($id, $title, $body, $category_id, $category_name) {
-        return array(
-            'id' => $id,
-            'title' => $title,
-            'body' => html_entity_decode($body),
-            'category_id' => $category_id,
-            'category_name' => $category_name
-        );
+    protected function dataToObject(Array $dataArr): CatalogItem {
+        $cleanedDataArr = $this->cleanData($dataArr);
+
+        return $this->createCatalogItemObject($cleanedDataArr);
     }
 
-    protected function cleanData($dataArr) {
+    private function cleanData(Array $dataArr): array {
         $cleanedDataArr = Array();
 
         foreach ($dataArr as $data) {
@@ -35,7 +37,7 @@ class CatalogItemController {
         return $cleanedDataArr;
     }
 
-    protected function createCatalogItemObject($dataArr) {
+    private function createCatalogItemObject(Array $dataArr): CatalogItem {
         $catalogItem = new CatalogItem();
 
         $properties = array_keys($this->getPublicProperties($catalogItem)); // Получаем все public properties
@@ -50,7 +52,7 @@ class CatalogItemController {
         return $catalogItem;
     }
 
-    private function getPublicProperties($catalogItem) {
+    private function getPublicProperties($catalogItem): array {
         return get_object_vars($catalogItem);
     }
 

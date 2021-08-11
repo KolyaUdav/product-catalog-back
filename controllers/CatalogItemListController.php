@@ -1,7 +1,12 @@
 <?php
 
+namespace pcb\controllers;
+
 include_once 'CatalogItemController.php';
 include_once '../models/CatalogItem.php';
+
+use pcb\models\CatalogItem;
+use PDO;
 
 class CatalogItemListController extends CatalogItemController {
 
@@ -35,7 +40,7 @@ class CatalogItemListController extends CatalogItemController {
         return null;
     }
 
-    private function fetchCatalogItemRow($result) {
+    private function fetchCatalogItemRow($result): array {
         $items_arr = array();
 
         while ($row = $result->fetch(PDO::FETCH_ASSOC)) {

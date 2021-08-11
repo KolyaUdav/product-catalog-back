@@ -1,7 +1,10 @@
 <?php
 
+namespace pcb\controllers;
+
 include_once 'CatalogItemController.php';
-include_once '../models/CatalogItem.php';
+
+use PDO;
 
 class SingleCatalogItemController extends CatalogItemController {
 
@@ -26,24 +29,21 @@ class SingleCatalogItemController extends CatalogItemController {
         $stmt->execute();
 
         $dataArr = $stmt->fetch(PDO::FETCH_ASSOC);
-
-        $catalogItem = parent::createCatalogItemObject($dataArr);
         
-        return $catalogItem;
+        return parent::dataToObject($dataArr);
     }
 
     /** Принимает на вход ассоциативный массив с данными о новом CatalogItem
      * возвращает True, если INSERT в БД прошёл успешно,
      * возвращает False, если есть ошибка
      */
-    public function createSingleItem($dataArr) {
-        $cleanedDataArr = parent::cleanData($dataArr);
-
-        $newCatalogItem = parent::createCatalogItemObject($dataArr);
+    public function createSingleItem(Array $dataArr): bool {
+        $newCatalogItem = parent::dataToObject($dataArr);
 
         $query = 'INSERT INTO '.parent::TABLE.' SET title = :title, body = :body, category_id = :category_id';
 
         $stmt = $this->conn->prepare($query);
+
         $stmt->bindParam(':title', $newCatalogItem->title);
         $stmt->bindParam(':body', $newCatalogItem->body);
         $stmt->bindParam(':category_id', $newCatalogItem->category_id);
@@ -57,10 +57,8 @@ class SingleCatalogItemController extends CatalogItemController {
         return false;
     }
 
-    public function updateSingleItem($dataArr) {
-        $cleanedDataArr = parent::cleanData($dataArr);
-
-        $updCatalogItem = parent::createCatalogItemObject($dataArr);
+    public function updateSingleItem(Array $dataArr): bool {
+        $updCatalogItem = parent::dataToObject($dataArr);
 
         $query = 'UPDATE '.parent::TABLE.' SET title = :title, body = :body, category_id = :category_id WHERE id = :id';
         $stmt = $this->conn->prepare($query);
@@ -78,10 +76,8 @@ class SingleCatalogItemController extends CatalogItemController {
         return false;
     }
 
-    public function deleteSingleItem($dataArr) {
-        $cleanedDataArr = parent::cleanData($dataArr); // clean ID
-
-        $deleteCatalogItem = parent::createCatalogItemObject($dataArr);
+    public function deleteSingleItem(Array $dataArr): bool {
+        $deleteCatalogItem = parent::dataToObject($dataArr);
 
         $query = 'DELETE FROM '.parent::TABLE.' WHERE id = :id';
         $stmt = $this->conn->prepare($query);
