@@ -2,20 +2,24 @@
 
 namespace pcb\models;
 
-class CatalogItem {
+require_once '../interfaces/ModelInterface.php';
+
+use pcb\interfaces\ModelInterface;
+
+class CatalogItem implements ModelInterface {
 
     /** ПРИ ОБЪЯВЛЕНИИ НОВОГО PUBLIC-СВОЙСТВА
      * НЕОБХОДИМО ДОБАВИТЬ ЕГО ИМЯ В SWITCH-КОНСТРУКЦИЮ 
      * МЕТОДА addValueToProperty
      */
-    public $id;
-    public $category_id;
-    public $category_name;
-    public $title;
-    public $body;
+    public int $id;
+    public int $category_id;
+    public string $category_name;
+    public string $title;
+    public string $body;
 
     /** Для автоматического добавления значений свойствам */
-    public function addValueToProperty($propName, $propValue) {
+    public function addValueToProperties($propName, $propValue) {
         switch ($propName) {
             case 'id':
                 $this->id = $propValue;
@@ -34,5 +38,4 @@ class CatalogItem {
                 break;
         }
     }
-
 }

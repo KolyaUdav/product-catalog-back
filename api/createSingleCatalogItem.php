@@ -2,9 +2,9 @@
 
 namespace pcb\api;
 
-include_once 'item/ApiSingleCatalogItem.php';
+require_once 'ApiCatalogItem.php';
 
-use pcb\api\item\ApiSingleCatalogItem;
+use pcb\api\item\ApiCatalogItem;
 
 header('Access-Control-Allow-Origin: *');
 header('Content-Type: application/json');
@@ -13,5 +13,5 @@ header('Access-Control-Allow-Headers: Access-Control-Allow-Headers, Content-Type
 
 $rawCreateData = file_get_contents('php://input');
 
-$apiSingleItem = new ApiSingleCatalogItem();
+$apiSingleItem = new ApiCatalogItem();
 echo $apiSingleItem->setJsonSingleItem($rawCreateData);
