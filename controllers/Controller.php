@@ -19,10 +19,17 @@ class Controller {
         $this->conn = $db->connect();
     }
 
-    protected function getConnection(): PDO {
+    /*Получение PDO-объекта для взаимодействия с БД*/
+    private function getConnection(): PDO {
         return $this->conn;
     }
 
+    /**
+     * @param string $query
+     * @param callable $bindFunction
+     * @return PDOStatement
+     */
+    /* Выполнение запроса к БД */
     protected function queryDB(string $query, callable $bindFunction): PDOStatement {
         $stmt = $this->getConnection()->prepare($query);
         call_user_func($bindFunction, $stmt);
@@ -31,12 +38,20 @@ class Controller {
         return $stmt;
     }
 
-    protected function getListFromDB(string $query, callable $bindFunction, callable $putObjectFunction): array {
+    /**
+     * @param string $query
+     * @param callable $bindFunction
+     * @param callable $putPropsFunction
+     * @return array
+     */
+    /* Получение списка объектов из БД */
+    protected function getListFromDB(string $query, callable $bindFunction, callable $putPropsFunction): array {
         $result = $this->queryDB($query, $bindFunction);
-        return $this->fetchRow($result, $putObjectFunction);
+        return $this->fetchRow($result, $putPropsFunction);
     }
 
-    protected function cleanData(Array $dataArr): array {
+    /* Очистка поступающих извне данных */
+    private function cleanData(Array $dataArr): array {
         $cleanedDataArr = Array();
 
         foreach ($dataArr as $data) {
@@ -48,14 +63,18 @@ class Controller {
         return $cleanedDataArr;
     }
 
-    protected function fetchRow($result, callable $putObject): array {
+    /* Формирование массива данных из БД */
+    private function fetchRow($result, callable $putPropsFunction): array {
         $arr = array();
 
         if ($result->rowCount() > 0) {
             while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
                 extract($row);
 
-                $object = call_user_func($putObject, $row);
+                /*
+                 * $row содержит информацию из БД и используется
+                 *  в дочерних классах для передачи значений в свойства объектов */
+                $object = call_user_func($putPropsFunction, $row);
 
                 array_push($arr, $object);
             }
@@ -71,7 +90,9 @@ class Controller {
     /**
      * @throws Exception
      */
-    protected function valueNotEmpty($value) {
+    /* Проверка данных, поступающих извне от клиента на то,
+     чтобы все необходимые переменные не были пустыми */
+    private function valueNotEmpty($value) {
         if (empty($value)) {
             throw new Exception('Some variables are empty.');
         }
@@ -82,12 +103,11 @@ class Controller {
     /**
      * $params - ассоциативный двумерный массив формата $params['names'] и $params['values']
     */
-    protected function sendDataToDB(string $query, ModelInterface $object, array $params): bool {
+    /* Отправка данных в базу (CREATE, UPDATE, DELETE) */
+    protected function sendDataToDB(string $query, array $params): bool {
         try {
-            $this->queryDB($query, function(PDOStatement $stmt) use($object, $params) {
-                for ($i = 0; $i < count($params['names']); $i++) {
-                    $stmt->bindValue($params['names'][$i], $this->valueNotEmpty($params['values'][$i]));
-                }
+            $this->queryDB($query, function(PDOStatement $stmt) use($params) {
+                $this->bindValues($params, $stmt);
             });
         } catch (Exception $e) {
             printf('Error: %s', $e->getMessage());
@@ -97,8 +117,37 @@ class Controller {
         return true;
     }
 
-    protected function getPublicProperties(ModelInterface $object): array {
+    private function bindValues(array $valuesArr, PDOStatement $stmt) {
+        foreach ($valuesArr as $value) {
+            $stmt->bindValue(array_search($value, $valuesArr), $value);
+        }
+    }
+
+    /* Получение всех паблик-свойств из модели */
+    private function getPublicProperties(ModelInterface $object): array {
         return get_class_vars($object::class);
+    }
+
+    /* Принимает в кач-ве аргумента пустой объект ModelInterface
+    и заполняет его свойства данными из $dataArr */
+    protected function dataToObject(array $dataArr, ModelInterface $object): ModelInterface {
+        $cleanedDataArr = $this->cleanData($dataArr);
+
+        return $this->createObject($cleanedDataArr, $object);
+    }
+
+    /* Заполняет свойства объекта ModelInterface */
+    private function createObject(Array $dataArr, ModelInterface $object): ModelInterface {
+        $properties = array_keys($this->getPublicProperties($object)); // Получаем все public properties
+
+        foreach ($properties as $prop) {
+            if (array_key_exists($prop, $dataArr)) {
+                /** Используем метод для автоматического присваивания value необходимым свойствам */
+                $object->addValueToProperties($prop, $dataArr[$prop]);
+            }
+        }
+
+        return $object;
     }
 
 }

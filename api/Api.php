@@ -10,7 +10,6 @@ class Api {
         return get_object_vars($data);
     }
 
-
     protected function prepareDataToSendClient($dataArr): string {
         return json_encode($dataArr);
     }

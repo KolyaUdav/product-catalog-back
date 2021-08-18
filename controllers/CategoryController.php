@@ -9,6 +9,7 @@ require_once '../interfaces/ControllerInterface.php';
 use pcb\interfaces\ModelInterface;
 use pcb\models\Category;
 use pcb\interfaces\ControllerInterface;
+use PDO;
 
 class CategoryController extends Controller implements ControllerInterface {
 
@@ -19,42 +20,50 @@ class CategoryController extends Controller implements ControllerInterface {
     }
 
     public function getList(): array {
-        return array();
+        $query = 'SELECT * FROM '.self::TABLE;
+
+        return parent::getListFromDB($query, function ($stmt) {}, function ($row) {
+            $category = new Category();
+            $category->id = $row['id'];
+            $category->name = $row['name'];
+
+            return $category;
+        });
     }
 
-    private function fetchCategoryRow($rowData): array {
-        if ($rowData->rowCount() > 0) {
-            parent::fetchRow($rowData, function($row) {
-                $category = new Category();
-                $category->id = $row['id'];
-                $category->name = $row['name'];
+    public function get($id): ModelInterface {
+        $query = 'SELECT * FROM '.self::TABLE.' WHERE id = :id';
 
-                return $category;
-            });
-        }
+        $stmt = parent::queryDB($query, function ($stmt) use($id) {
+            $stmt->bindValue(':id', $id);
+        });
 
-        return array('message' => 'No category list.');
+        $dataArr = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    }
-
-    public function get($id): ModelInterface
-    {
-        return new Category();
-
+        return parent::dataToObject($dataArr, new Category());
     }
 
     public function create(array $dataArr): bool
     {
-        return false;
+        $category = parent::dataToObject($dataArr, new Category());
+        $query = 'INSERT INTO '.self::TABLE.' SET name = :name';
+
+        return parent::sendDataToDB($query, array(':name' => $category->name));
     }
 
     public function update(array $dataArr): bool
     {
-        return false;
+        $category = parent::dataToObject($dataArr, new Category());
+        $query = 'UPDATE '.self::TABLE.' SET name = :name WHERE id = :id';
+
+        return parent::sendDataToDB($query, array(':name' => $category->name, ':id' => $category->id));
     }
 
     public function delete(array $dataArr): bool
     {
-        return false;
+        $category = parent::dataToObject($dataArr, new Category());
+        $query = 'DELETE FROM '.self::TABLE.' WHERE id = :id';
+
+        return parent::sendDataToDB($query, array(':id' => $category->id));
     }
 }

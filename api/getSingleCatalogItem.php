@@ -2,7 +2,7 @@
 
 namespace pcb\api;
 
-include_once('ApiCatalogItem.php');
+require_once 'ApiCatalogItem.php';
 
 use pcb\api\item\ApiCatalogItem;
 
