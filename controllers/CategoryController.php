@@ -9,7 +9,6 @@ require_once '../interfaces/ControllerInterface.php';
 use pcb\interfaces\ModelInterface;
 use pcb\models\Category;
 use pcb\interfaces\ControllerInterface;
-use PDO;
 
 class CategoryController extends Controller implements ControllerInterface {
 
@@ -34,13 +33,10 @@ class CategoryController extends Controller implements ControllerInterface {
     public function get($id): ModelInterface {
         $query = 'SELECT * FROM '.self::TABLE.' WHERE id = :id';
 
-        $stmt = parent::queryDB($query, function ($stmt) use($id) {
-            $stmt->bindValue(':id', $id);
-        });
-
-        $dataArr = $stmt->fetch(PDO::FETCH_ASSOC);
-
-        return parent::dataToObject($dataArr, new Category());
+        return parent::getSingleFromDB($query, new Category(),
+            function ($stmt) use ($id) {
+                $stmt->bindValue(':id', $id);
+            });
     }
 
     public function create(array $dataArr): bool

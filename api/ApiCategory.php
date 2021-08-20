@@ -2,8 +2,8 @@
 
 namespace pcb\api\category;
 
-include_once '../controllers/CategoryController.php';
-include_once 'Api.php';
+require_once '../controllers/CategoryController.php';
+require_once 'Api.php';
 
 use pcb\controllers\CategoryController;
 use pcb\api\Api;
@@ -14,24 +14,27 @@ class ApiCategory extends Api {
         $controller = new CategoryController();
         $categoryList = $controller->getList();
 
-        $dataArr = array();
-        $dataArr['data'] = array();
+        if ($categoryList != null) {
+            $wrappedArr = parent::toWrapObjList($categoryList);
 
-        foreach ($categoryList as $category) {
-            array_push($dataArr['data'], parent::putDataToArray($category));
+            return parent::prepareDataToSendClient($wrappedArr);
         }
 
-        return parent::prepareDataToSendClient($dataArr);
+        return parent::prepareDataToSendClient(array('message' => 'Categories not found.'));
     }
 
-    public function getjsonSingleCategory($id): string {
+    public function getJsonSingleCategory($id): string {
         $controller = new CategoryController();
         $category = $controller->get($id);
 
-        $dataArr = array();
-        $dataArr['data'] = parent::putDataToArray($category);
+        if (!empty($category->id)) {
+            $dataArr = array();
+            $dataArr['data'] = parent::putDataToArray($category);
 
-        return parent::prepareDataToSendClient($dataArr);
+            return parent::prepareDataToSendClient($dataArr);
+        }
+
+        return parent::prepareDataToSendClient(array('message' => 'No Category found with this id.'));
     }
 
     public function setJsonCategory($jsonString): string {

@@ -15,9 +15,14 @@ class ApiCatalogItem extends Api {
         $controller = new CatalogItemController();
         $item = $controller->get($id);
 
-        $obj_arr = array();
-        $obj_arr['data'] = parent::putDataToArray($item);
-        return parent::prepareDataToSendClient($obj_arr);
+        if (!empty($item->id)) {
+            $obj_arr = array();
+            $obj_arr['data'] = parent::putDataToArray($item);
+
+            return parent::prepareDataToSendClient($obj_arr);
+        }
+
+        return parent::prepareDataToSendClient(array('message' => 'No item found with this id.'));
 
     }
 
@@ -63,8 +68,8 @@ class ApiCatalogItem extends Api {
         $controller = new CatalogItemController();
         $list = $controller->getList();
 
-        if ($list !== null) {
-            $wrapped_arr = $this->toWrapCatalogItemList($list);
+        if ($list != null) {
+            $wrapped_arr = parent::toWrapObjList($list);
 
             return parent::prepareDataToSendClient($wrapped_arr);
         }
@@ -72,17 +77,17 @@ class ApiCatalogItem extends Api {
         return parent::prepareDataToSendClient(Array('message' => 'No objects found.'));
     }
 
-    private function toWrapCatalogItemList($list): array {
-        $obj_arr = Array();
-        $obj_arr['data'] = Array();
+    public function getJsonListByCategory($category_id) {
+        $controller = new CatalogItemController();
+        $list = $controller->getListByCategory($category_id);
 
-        foreach ($list as $obj) {
-            /** Данные объекта пакуем в ассоц. массив, затем добавляем его в массив obj_arr[data] */
+        if ($list != null) {
+            $wrapped_arr = parent::toWrapObjList($list);
 
-            array_push($obj_arr['data'], parent::putDataToArray($obj));
+            return parent::prepareDataToSendClient($wrapped_arr);
         }
 
-        return $obj_arr;
+        return parent::prepareDataToSendClient(array('message' => 'No Catalog Items by this category'));
     }
 
 }

@@ -47,7 +47,20 @@ class Controller {
     /* Получение списка объектов из БД */
     protected function getListFromDB(string $query, callable $bindFunction, callable $putPropsFunction): array {
         $result = $this->queryDB($query, $bindFunction);
+
         return $this->fetchRow($result, $putPropsFunction);
+    }
+
+    protected function getSingleFromDB(string $query, ModelInterface $object, callable $bindFunction): ModelInterface {
+        $stmt = $this->queryDB($query, $bindFunction);
+
+        $dataArr = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if (empty($dataArr)) {
+            $dataArr = array();
+        }
+
+        return $this->dataToObject($dataArr, $object);
     }
 
     /* Очистка поступающих извне данных */
@@ -78,11 +91,7 @@ class Controller {
 
                 array_push($arr, $object);
             }
-
-            return $arr;
         }
-
-        $arr['message'] = 'No list.';
 
         return $arr;
     }
@@ -117,9 +126,12 @@ class Controller {
         return true;
     }
 
+    /**
+     * @throws Exception
+     */
     private function bindValues(array $valuesArr, PDOStatement $stmt) {
         foreach ($valuesArr as $value) {
-            $stmt->bindValue(array_search($value, $valuesArr), $value);
+            $stmt->bindValue(array_search($value, $valuesArr), $this->valueNotEmpty($value));
         }
     }
 

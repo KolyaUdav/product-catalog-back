@@ -8,15 +8,18 @@ use pcb\interfaces\ModelInterface;
 
 class Category implements ModelInterface {
 
+    private const ID = 'id';
+    private const NAME = 'name';
+
     public int $id;
     public string $name;
 
     public function addValueToProperties($propName, $propValue) {
         switch ($propName) {
-            case 'id':
+            case self::ID:
                 $this->id = $propValue;
                 break;
-            case 'name':
+            case self::NAME:
                 $this->name = $propValue;
                 break;
         }

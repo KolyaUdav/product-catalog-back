@@ -3,6 +3,7 @@
 namespace pcb\controllers;
 
 require_once '../interfaces/ControllerInterface.php';
+require_once 'CategoryController.php';
 require_once '../models/CatalogItem.php';
 require_once '../interfaces/ModelInterface.php';
 
@@ -32,7 +33,7 @@ class CatalogItemController extends Controller implements ControllerInterface {
                 ORDER BY 
                     i.id DESC';
 
-        return parent::getListFromDB($query, function ($stmt){}, function ($row) {
+        return parent::getListFromDB($query, function ($stmt){}, function ($row): CatalogItem {
             $catalogItem = new CatalogItem();
             $catalogItem->id = $row['id'];
             $catalogItem->category_id = $row['category_id'];
@@ -56,13 +57,10 @@ class CatalogItemController extends Controller implements ControllerInterface {
                     categories c ON i.category_id = c.id 
                 WHERE i.id = :id LIMIT 0,1';
 
-        $stmt = parent::queryDB($query, function ($stmt) use($id) {
-            $stmt->bindValue(':id', $id);
-        });
-
-        $dataArr = $stmt->fetch(PDO::FETCH_ASSOC);
-
-        return parent::dataToObject($dataArr, new CatalogItem());
+        return parent::getSingleFromDB($query, new CatalogItem(),
+            function ($stmt) use ($id) {
+                $stmt->bindValue(':id', $id);
+            });
     }
 
     /** Принимает на вход ассоциативный массив с данными о новом CatalogItem
@@ -99,6 +97,26 @@ class CatalogItemController extends Controller implements ControllerInterface {
         return parent::sendDataToDB($query, array(
             ':id' => $catalogItem->id
         ));
+    }
+
+    public function getListByCategory(int $category_id): array {
+      $query = 'SELECT i.id, i.category_id, i.title, i.body, c.name as category_name FROM '.
+          self::TABLE.' i LEFT JOIN '.CategoryController::TABLE.
+          ' c ON i.category_id = c.id WHERE i.category_id = :category_id ORDER BY i.id DESC';
+
+      return parent::getListFromDB($query,
+          function ($stmt) use ($category_id) {
+            $stmt->bindValue(':category_id', $category_id);
+      }, function ($row): CatalogItem {
+          $catalogItem = new CatalogItem();
+          $catalogItem->id = $row['id'];
+          $catalogItem->category_id = $row['category_id'];
+          $catalogItem->category_name = $row['category_name'] ?? 'No Category.';
+          $catalogItem->title = $row['title'];
+          $catalogItem->body = $row['body'];
+
+          return $catalogItem;
+      });
     }
 
 }

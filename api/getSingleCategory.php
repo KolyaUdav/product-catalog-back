@@ -9,7 +9,7 @@ use pcb\api\category\ApiCategory;
 header('Access-Control-Allow-Origin: *');
 header('Content-Type: application/json');
 
-$category_id = $_GET['id'] ?? die();
+$category_id = empty($_GET['id']) ? die() : $_GET['id'];
 
 $apiCategory = new ApiCategory();
 echo $apiCategory->getjsonSingleCategory($category_id);

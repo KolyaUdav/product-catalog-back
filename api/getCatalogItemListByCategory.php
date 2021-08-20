@@ -9,5 +9,7 @@ use pcb\api\item\ApiCatalogItem;
 header('Access-Control-Allow-Origin: *');
 header('Content-Type: application/json');
 
-$apiItemList = new ApiCatalogItem();
-echo $apiItemList->getJsonCatalogItemList();
+$category_id = empty($_GET['category_id']) ? die() : $_GET['category_id'];
+
+$apiListByCategory = new ApiCatalogItem();
+echo $apiListByCategory->getJsonListByCategory($category_id);

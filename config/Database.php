@@ -7,12 +7,13 @@ use PDOException;
 
 class Database {
     
-    private $host = 'localhost';
-    private $db_name = 'product-catalog';
-    private $username = 'root';
-    private $password = '';
+    private string $host = 'localhost';
+    private string $db_name = 'product-catalog';
+    private string $username = 'root';
+    private string $password = '';
 
-    public function connect() {
+    public function connect(): ?PDO
+    {
         $conn = null;
 
         try {
