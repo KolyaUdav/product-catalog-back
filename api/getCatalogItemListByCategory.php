@@ -12,4 +12,4 @@ header('Content-Type: application/json');
 $category_id = empty($_GET['category_id']) ? die() : $_GET['category_id'];
 
 $apiListByCategory = new ApiCatalogItem();
-echo $apiListByCategory->getJsonListByCategory($category_id);
+echo $apiListByCategory->getJsonListByCategory((int)$category_id);

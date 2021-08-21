@@ -23,7 +23,7 @@ class ApiCategory extends Api {
         return parent::prepareDataToSendClient(array('message' => 'Categories not found.'));
     }
 
-    public function getJsonSingleCategory($id): string {
+    public function getJsonSingleCategory(int $id): string {
         $controller = new CategoryController();
         $category = $controller->get($id);
 
@@ -37,7 +37,7 @@ class ApiCategory extends Api {
         return parent::prepareDataToSendClient(array('message' => 'No Category found with this id.'));
     }
 
-    public function setJsonCategory($jsonString): string {
+    public function setJsonCategory(string $jsonString): string {
         $dataArr = parent::jsonToAssocArray($jsonString);
         $controller = new CategoryController();
 
@@ -48,7 +48,7 @@ class ApiCategory extends Api {
         return json_encode(Array('message' => 'Category was not created.'));
     }
 
-    public function updateJsonCategory($jsonString): string {
+    public function updateJsonCategory(string $jsonString): string {
         $dataArr = parent::jsonToAssocArray($jsonString);
         $controller = new CategoryController();
 
@@ -59,7 +59,7 @@ class ApiCategory extends Api {
         return json_encode(Array('message' => 'Category was not updated.'));
     }
 
-    public function deleteJsonCategory($jsonString): string {
+    public function deleteJsonCategory(string $jsonString): string {
         $dataArr = parent::jsonToAssocArray($jsonString);
         $controller = new CategoryController();
 

@@ -11,7 +11,7 @@ use pcb\Api\Api;
 class ApiCatalogItem extends Api {
 
     /** Вызывается при отправке данных отдельного CatalogItem */
-    public function getJsonSingleItem($id): string {
+    public function getJsonSingleItem(int $id): string {
         $controller = new CatalogItemController();
         $item = $controller->get($id);
 
@@ -27,7 +27,7 @@ class ApiCatalogItem extends Api {
     }
 
     /** Вызывается при создании клиентом нового CatalogItem */
-    public function setJsonSingleItem($jsonString): string {
+    public function setJsonSingleItem(string $jsonString): string {
         $dataArr = parent::jsonToAssocArray($jsonString);
 
         $controller = new CatalogItemController();
@@ -39,7 +39,7 @@ class ApiCatalogItem extends Api {
         return json_encode(Array('message' => 'Catalog Item was not created.'));
     }
 
-    public function updateJsonSingleItem($jsonString): string {
+    public function updateJsonSingleItem(string $jsonString): string {
         $dataArr = parent::jsonToAssocArray($jsonString);
 
         $controller = new CatalogItemController();
@@ -52,7 +52,7 @@ class ApiCatalogItem extends Api {
 
     }
 
-    public function deleteJsonSingleItem($jsonString): string {
+    public function deleteJsonSingleItem(string $jsonString): string {
         $dataArr = parent::jsonToAssocArray($jsonString);
 
         $controller = new CatalogItemController();
@@ -77,7 +77,8 @@ class ApiCatalogItem extends Api {
         return parent::prepareDataToSendClient(Array('message' => 'No objects found.'));
     }
 
-    public function getJsonListByCategory($category_id) {
+    public function getJsonListByCategory(int $category_id): string
+    {
         $controller = new CatalogItemController();
         $list = $controller->getListByCategory($category_id);
 

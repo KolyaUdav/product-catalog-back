@@ -6,7 +6,7 @@ require_once '../controllers/Controller.php';
 
 class Api {
 
-    protected function putDataToArray($data): array {
+    protected function putDataToArray(array $data): array {
         return get_object_vars($data);
     }
 
