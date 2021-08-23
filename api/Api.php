@@ -2,11 +2,13 @@
 
 namespace pcb\api;
 
+use pcb\interfaces\ModelInterface;
+
 require_once '../controllers/Controller.php';
 
 class Api {
 
-    protected function putDataToArray(array $data): array {
+    protected function putDataToArray(ModelInterface $data): array {
         return get_object_vars($data);
     }
 
