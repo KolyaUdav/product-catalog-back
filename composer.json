@@ -1,2 +1,12 @@
 {
+  "autoload": {
+    "psr-4": {
+      "pcb\\api\\item\\": "api",
+      "pcb\\api\\category\\": "api",
+      "pcb\\config\\": "config",
+      "pcb\\controllers\\": "controllers",
+      "pcb\\interfaces\\": "interfaces",
+      "pcb\\models\\": "models"
+    }
+  }
 }

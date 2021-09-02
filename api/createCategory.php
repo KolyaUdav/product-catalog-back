@@ -2,7 +2,7 @@
 
 namespace pcb\api;
 
-require_once 'ApiCategory.php';
+require_once '../vendor/autoload.php';
 
 use pcb\api\category\ApiCategory;
 
